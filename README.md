@@ -2,7 +2,7 @@
 
 ## Introducción
 
-Este proyecto presenta una serie de implementaciones del juego Piedra, Papel y Tijeras, progresando desde lo más básico hasta estrategias de Inteligencia Artificial más sofisticadas. Cada versión introduce nuevos conceptos de programación y patrones de desarrollo, siendo adecuado para estudiantes de Formación Profesional.
+Este proyecto presenta una serie de implementaciones del juego Piedra, Papel y Tijeras, progresando desde lo más básico hasta estrategias de Inteligencia Artificial más sofisticadas. Cada versión introduce nuevos conceptos de programación y patrones de desarrollo.
 
 ## Prerrequisitos
 
