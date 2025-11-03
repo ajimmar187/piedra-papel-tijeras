@@ -375,11 +375,13 @@ Todas las versiones incluyen:
 
 ## Deactivar el Entorno Virtual
 
-Una vez finalizado el trabajo, puede desactivar el entorno virtual:
+Si ha activado manualmente el entorno virtual usando `source .venv/bin/activate` (macOS/Linux) o `.venv\Scripts\Activate.ps1` (Windows), puede desactivarlo cuando termine:
 
 ```bash
 deactivate
 ```
+
+Nota: Si usa `uv run` para ejecutar los scripts, no es necesario desactivar el entorno virtual ya que se gestiona automáticamente.
 
 ---
 
