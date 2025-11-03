@@ -37,7 +37,7 @@ uv --version
 
 ### Opción 1: Clonar el repositorio Git
 ```bash
-git clone <URL_DEL_REPOSITORIO>
+git clone https://github.com/ajimmar187/piedra-papel-tijeras
 cd piedra-papel-tijeras
 ```
 
@@ -48,15 +48,21 @@ cd piedra-papel-tijeras
 
 ## Configuración del Entorno
 
-### Crear y activar el entorno virtual
+### Instalar dependencias
+
+Una vez que haya descargado o clonado el proyecto, navegue a la carpeta del proyecto en la terminal e instale las dependencias usando `uv sync`:
 
 ```bash
-uv venv
+uv sync
 ```
 
-Esto crea un entorno virtual en el directorio `.venv`.
+Este comando crea automáticamente un entorno virtual en el directorio `.venv` e instala todas las dependencias especificadas en `pyproject.toml`, asegurando que todas las versiones sean compatibles.
 
-#### Activar el entorno virtual:
+El entorno virtual se activa automáticamente cuando ejecuta comandos con `uv run`.
+
+### Activar el entorno virtual manualmente (opcional)
+
+Si prefiere activar el entorno virtual de forma manual para trabajar con él directamente:
 
 **En Windows (PowerShell):**
 ```powershell
@@ -73,15 +79,7 @@ Esto crea un entorno virtual en el directorio `.venv`.
 source .venv/bin/activate
 ```
 
-### Instalar dependencias
-
-Este proyecto utiliza pocas dependencias externas. Para instalar las dependencias especificadas en `pyproject.toml`, use el comando `uv sync`:
-
-```bash
-uv sync
-```
-
-Este comando instala todas las dependencias del proyecto en el entorno virtual, asegurando que todas las versiones sean compatibles.
+Una vez activado, puede ejecutar los scripts directamente con `python` sin usar `uv run`.
 
 ## Estructura del Proyecto
 
@@ -236,9 +234,9 @@ El proyecto contiene 5 versiones del juego, cada una implementando conceptos pro
 
 ## Ejecución de los Programas
 
-Asegúrese de que el entorno virtual esté activado antes de ejecutar cualquier programa.
+### Método recomendado: Ejecutar con uv run
 
-### Ejecutar una versión específica con uv
+Este es el método más simple y no requiere activar explícitamente el entorno virtual. El comando `uv run` ejecuta automáticamente el script en el contexto del entorno virtual:
 
 ```bash
 uv run 1_Basico.py
@@ -248,11 +246,9 @@ uv run 4_IA_Basica.py
 uv run 5_Mas_IA.py
 ```
 
-El comando `uv run` ejecuta automáticamente el script en el contexto del entorno virtual configurado, sin necesidad de activarlo explícitamente.
+### Método alternativo: Ejecutar con Python directamente
 
-### Alternativa: Ejecutar con Python directamente
-
-Si prefiere ejecutar con Python directamente tras activar el entorno:
+Si ha activado manualmente el entorno virtual, puede ejecutar los scripts directamente con `python`:
 
 ```bash
 python 1_Basico.py
