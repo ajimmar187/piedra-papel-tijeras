@@ -1,19 +1,32 @@
 """
 Piedra, Papel y Tijeras - Versión con IA Básica
 ================================================
-Implementación con una estrategia de IA simple que aprende de las victorias 
-y derrotas del usuario.
+Implementación con una estrategia de IA simple que aprende de sus propios resultados
+en rondas anteriores.
 
 Características:
 - Enums para acciones y resultados del juego
-- Historial de acciones y resultados para análisis
-- IA básica que adapta su estrategia según el resultado anterior
+- Historial de acciones de la IA y resultados para análisis
+- IA básica que adapta su estrategia según su propio desempeño anterior
 - Manejo robusto de errores
 
-Estrategia de IA:
-1. Si el usuario ganó la última ronda: la IA elige la acción que habría ganado
-2. Si el usuario perdió la última ronda: la IA cambia de estrategia 
-3. Si fue empate: la IA elige aleatoriamente
+Estrategia de IA JUSTA Y HONESTA:
+
+IMPORTANTE: El historial de resultados (historial_juego) se guarda desde la perspectiva
+del usuario:
+  - ResultadoJuego.Victoria = el usuario ganó (la IA perdió)
+  - ResultadoJuego.Derrota = el usuario perdió (la IA ganó)
+  - ResultadoJuego.Empate = fue empate
+
+La lógica de la IA:
+1. Primera ronda: elige aleatoriamente (sin información)
+2. Si el usuario ganó la última ronda (IA perdió): intenta una acción diferente
+3. Si el usuario perdió la última ronda (IA ganó): repite esa acción ganadora
+4. Si fue empate: elige aleatoriamente
+
+NOTA IMPORTANTE: La IA NUNCA mira la acción actual que el usuario acaba de elegir.
+Solo analiza su propio historial de acciones y los resultados pasados.
+Mirar la acción del usuario sería hacer trampa.
 """
 
 import random
@@ -34,24 +47,22 @@ class ResultadoJuego(IntEnum):
     Empate = 2
 
 
-# Diccionario que define qué acción vence a otra
-Victorias = {
-    AccionJuego.Piedra: AccionJuego.Papel,    # Papel vence a Piedra
-    AccionJuego.Papel: AccionJuego.Tijeras,   # Tijeras vence a Papel
-    AccionJuego.Tijeras: AccionJuego.Piedra   # Piedra vence a Tijeras
-}
-
 
 def evaluar_juego(eleccion_usuario, eleccion_computadora):
     """
     Determina el resultado del juego y muestra el mensaje correspondiente.
+    
+    Los resultados se reportan desde la perspectiva del usuario:
+    - Victoria: el usuario ganó
+    - Derrota: el usuario perdió
+    - Empate: fue un empate
     
     Args:
         eleccion_usuario (AccionJuego): La acción elegida por el usuario
         eleccion_computadora (AccionJuego): La acción elegida por la computadora
         
     Returns:
-        ResultadoJuego: El resultado del juego para el usuario
+        ResultadoJuego: El resultado del juego para el usuario (Victoria/Derrota/Empate)
     """
     
     if eleccion_usuario == eleccion_computadora:
@@ -63,7 +74,7 @@ def evaluar_juego(eleccion_usuario, eleccion_computadora):
         if eleccion_computadora == AccionJuego.Tijeras:
             print("La piedra rompe las tijeras. ¡Ganaste!")
             resultado_juego = ResultadoJuego.Victoria
-        else:
+        else:  # La computadora eligió Papel
             print("El papel envuelve la piedra. ¡Perdiste!")
             resultado_juego = ResultadoJuego.Derrota
 
@@ -72,57 +83,70 @@ def evaluar_juego(eleccion_usuario, eleccion_computadora):
         if eleccion_computadora == AccionJuego.Piedra:
             print("El papel envuelve la piedra. ¡Ganaste!")
             resultado_juego = ResultadoJuego.Victoria
-        else:
+        else:  # La computadora eligió Tijeras
             print("Las tijeras cortan el papel. ¡Perdiste!")
             resultado_juego = ResultadoJuego.Derrota
 
     # Elegiste Tijeras
-    elif eleccion_usuario == AccionJuego.Tijeras:
+    else:  # eleccion_usuario == AccionJuego.Tijeras
         if eleccion_computadora == AccionJuego.Piedra:
             print("La piedra rompe las tijeras. ¡Perdiste!")
             resultado_juego = ResultadoJuego.Derrota
-        else:
+        else:  # La computadora eligió Papel
             print("Las tijeras cortan el papel. ¡Ganaste!")
             resultado_juego = ResultadoJuego.Victoria
 
     return resultado_juego
 
             
-def obtener_accion_computadora(historial_usuario, historial_juego):
+def obtener_accion_computadora(historial_juego, historial_computadora):
     """
-    Obtiene la acción de la computadora basada en la IA simple.
+    Obtiene la acción de la computadora basada en la IA simple y honesta.
     
-    Estrategia:
-    - Primera ronda: acción aleatoria
-    - Si el usuario ganó: la IA elige la acción que habría ganado
-    - Si el usuario perdió: la IA intenta una estrategia diferente
+    Estrategia HONESTA (no hace trampa):
+    - La IA solo consulta su PROPIO historial de acciones anteriores
+    - La IA NUNCA mira la acción actual que acaba de elegir el usuario
+    - Adapta su estrategia basándose en sus propios resultados pasados
+    
+    Reglas:
+    - Primera ronda: acción aleatoria (sin información)
+    - Si el usuario ganó la última ronda (IA perdió): elige una acción diferente
+    - Si el usuario perdió la última ronda (IA ganó): repite esa acción ganadora
     - Si fue empate: acción aleatoria
     
+    Nota sobre historial_juego: Los resultados se guardan desde la perspectiva del usuario
+    (Victoria = el usuario ganó, Derrota = el usuario perdió, Empate = empate)
+    
     Args:
-        historial_usuario (list): Historial de acciones del usuario
-        historial_juego (list): Historial de resultados del juego
+        historial_juego (list): Historial de resultados del juego (perspectiva del usuario)
+        historial_computadora (list): Historial de PROPIAS acciones de la IA (lo importante)
         
     Returns:
         AccionJuego: La acción elegida por la computadora
     """
-    # No hay acciones previas del usuario => elección aleatoria de la computadora
-    if not historial_usuario or not historial_juego:
+    # Primera ronda sin historial => elección aleatoria
+    if len(historial_computadora) == 0:
         accion_computadora = obtener_accion_aleatoria_computadora()
-    # Implementación básica de "IA"
     else:
-        # Si el usuario ganó la última ronda: la IA elige lo que habría ganado
-        if historial_juego[-1] == ResultadoJuego.Victoria:
-            accion_computadora = obtener_accion_ganadora(historial_usuario[-1])
-        # Si el usuario perdió: cambiar a la siguiente acción en la secuencia
-        elif historial_juego[-1] == ResultadoJuego.Derrota:
-            # Cambiar a la siguiente acción (con rotación cíclica)
-            siguiente_accion = (historial_usuario[-1].value + 1) % len(AccionJuego)
-            accion_computadora = obtener_accion_ganadora(AccionJuego(siguiente_accion))
+        # Analizar el resultado de la última ronda (desde la perspectiva del usuario)
+        ultimo_resultado = historial_juego[-1]
+        
+        # Si el usuario ganó (IA perdió): intentar una acción diferente de la que perdió
+        if ultimo_resultado == ResultadoJuego.Victoria:
+            # La acción anterior de la IA fue la que perdió contra el usuario, hay que cambiar
+            accion_que_perdio = historial_computadora[-1]
+            acciones_disponibles = [a for a in AccionJuego if a != accion_que_perdio]
+            # Elegir aleatoriamente de las dos opciones restantes
+            accion_computadora = random.choice(acciones_disponibles)
+        
+        # Si el usuario perdió (IA ganó): mantener la estrategia ganadora
+        elif ultimo_resultado == ResultadoJuego.Derrota:
+            # La IA repite su última acción porque venció al usuario
+            accion_computadora = historial_computadora[-1]
+        
         # Si fue empate: elección aleatoria
         else:
             accion_computadora = obtener_accion_aleatoria_computadora()
-
-    print(f"La computadora eligió {accion_computadora.name}.")
     
     return accion_computadora
             
@@ -159,19 +183,6 @@ def obtener_accion_aleatoria_computadora():
     return accion_computadora
 
 
-def obtener_accion_ganadora(accion_juego):
-    """
-    Obtiene la acción que vence a la acción dada.
-    
-    Args:
-        accion_juego (AccionJuego): La acción contra la que queremos ganar
-        
-    Returns:
-        AccionJuego: La acción ganadora
-    """
-    return Victorias[accion_juego]
-
-
 def jugar_otra_ronda():
     """
     Pregunta al usuario si desea jugar otra ronda.
@@ -189,6 +200,7 @@ def main():
     
     historial_juego = []
     historial_acciones_usuario = []
+    historial_acciones_computadora = []
     
     while True:
         try:
@@ -199,7 +211,8 @@ def main():
             print(f"Selección inválida. ¡Elige una opción dentro del rango {rango_str}!")
             continue
 
-        eleccion_computadora = obtener_accion_computadora(historial_acciones_usuario, historial_juego)
+        eleccion_computadora = obtener_accion_computadora( historial_juego, historial_acciones_computadora)
+        historial_acciones_computadora.append(eleccion_computadora)
         resultado_juego = evaluar_juego(eleccion_usuario, eleccion_computadora)
         historial_juego.append(resultado_juego)
 

@@ -169,33 +169,44 @@ El proyecto contiene 5 versiones del juego, cada una implementando conceptos pro
 
 **Nivel:** Avanzado
 
-**Concepto central:** Implementación de una estrategia de IA simple que aprende del comportamiento del usuario basándose en el resultado anterior.
+**Concepto central:** Implementación de una estrategia de IA simple y honesta que aprende de sus propios resultados en rondas anteriores, sin hacer trampa.
 
 **Características principales:**
 - Enums para acciones y resultados del juego
-- Mantenimiento de historial de acciones y resultados
-- Estrategia de IA adaptable según el resultado previo
-- Análisis del último movimiento del usuario
-- Diccionario para mapear qué acción vence a otra
+- Mantenimiento de historial de propias acciones de la IA
+- Historial de resultados desde la perspectiva del usuario
+- Estrategia de IA adaptable basada en su propio desempeño
+- IA honesta que NUNCA mira la acción actual del usuario
+- Análisis solo de resultados pasados, no de información futura
 
-**Estrategia de IA implementada:**
-1. Primera ronda: La computadora elige aleatoriamente
-2. Si el usuario ganó: La computadora elige la acción que habría ganado esa ronda
-3. Si el usuario perdió: La computadora cambia de estrategia (rotación cíclica de acciones)
-4. Si fue empate: La computadora elige aleatoriamente
+**Estrategia de IA HONESTA y JUSTA:**
+
+Nota importante: El historial de resultados se guarda desde la perspectiva del usuario:
+- `Victoria` en historial = el usuario ganó (la IA perdió)
+- `Derrota` en historial = el usuario perdió (la IA ganó)
+- `Empate` en historial = fue empate
+
+La lógica de la IA:
+1. Primera ronda: Elige aleatoriamente (sin información previa)
+2. Si el usuario ganó la última ronda (IA perdió): Elige una acción diferente de la que falló
+3. Si el usuario perdió la última ronda (IA ganó): Repite esa acción ganadora
+4. Si fue empate: Elige aleatoriamente
+
+**Nota importante sobre la honestidad:**
+La IA únicamente consulta su propio historial de acciones anteriores. Nunca examina la acción actual que el usuario acaba de seleccionar. Utilizar la información actual del oponente sería "hacer trampa" y comprometería la integridad del juego educativo.
 
 **Conceptos de programación cubiertos:**
-- Historial y estado del programa
-- Análisis de datos históricos
-- Lógica condicional avanzada
-- Patrones de decisión adaptativos
-- Uso de diccionarios para mapeo de relaciones
+- Gestión de historial de la propia IA
+- Análisis de resultados pasados desde la perspectiva correcta
+- Lógica adaptable basada en desempeño
+- Patrones de decisión honesta
+- Diferencia entre usar información actual vs. histórica
 
 **Funciones principales:**
-- `obtener_accion_computadora()`: Elige basándose en el historial
-- `obtener_accion_ganadora()`: Devuelve la acción que vence a otra
+- `obtener_accion_computadora()`: Elige basándose en su propio historial (no en la acción actual del usuario)
 - `obtener_accion_aleatoria_computadora()`: Genera una acción aleatoria
-- Gestión de historial en `main()`
+- `evaluar_juego()`: Determina el resultado desde la perspectiva del usuario
+- Gestión de `historial_acciones_computadora` en `main()`
 
 ---
 
@@ -203,32 +214,38 @@ El proyecto contiene 5 versiones del juego, cada una implementando conceptos pro
 
 **Nivel:** Avanzado
 
-**Concepto central:** Análisis estadístico de patrones recientes para predecir el comportamiento del usuario.
+**Concepto central:** Análisis estadístico de patrones históricos para predecir el comportamiento del usuario, sin hacer trampa.
 
 **Características principales:**
 - Análisis estadístico de los últimos N movimientos del usuario
-- Detección de la acción más frecuente en los movimientos recientes
+- Detección de la acción más frecuente en los movimientos históricos previos
 - Estrategia basada en la predicción de patrones
 - Uso de la función `mode()` del módulo `statistics`
 - Constante configurable para el número de movimientos analizados
+- IA honesta que NUNCA mira la acción actual del usuario
 
-**Estrategia de IA avanzada:**
-1. Recopila los últimos 5 movimientos del usuario
-2. Calcula la acción más frecuente en esos movimientos usando `mode()`
+**Estrategia de IA avanzada (HONESTA):**
+1. Recopila los últimos 5 movimientos ANTERIORES del usuario
+2. Calcula la acción más frecuente en esos movimientos históricos usando `mode()`
 3. Elige la acción que vence a esa opción más frecuente
 4. Adapta su estrategia continuamente a medida que se recopilan más datos
+
+**Nota importante sobre la honestidad:**
+La IA analiza el HISTORIAL de movimientos anteriores del usuario. Nunca examina la acción actual que el usuario acaba de seleccionar. Esto garantiza que la IA es "honesta" y solo utiliza información del pasado, no información futura.
 
 **Conceptos de programación cubiertos:**
 - Análisis estadístico (`statistics.mode()`)
 - Detección de patrones en datos históricos
 - Ventanas deslizantes de datos
-- Lógica predictiva
-- Optimización de estrategias basada en datos
+- Lógica predictiva honesta
+- Optimización de estrategias basada en datos históricos
+- Diferencia entre información actual vs. histórica
 
 **Funciones principales:**
-- `obtener_accion_computadora()`: Elige basándose en análisis de patrones
+- `obtener_accion_computadora()`: Elige basándose en análisis de patrones históricos (NUNCA la acción actual)
 - `obtener_accion_ganadora()`: Devuelve la acción que vence a otra
 - `obtener_accion_aleatoria_computadora()`: Genera una acción aleatoria
+- `evaluar_juego()`: Determina el resultado desde la perspectiva del usuario
 
 ---
 

@@ -6,14 +6,20 @@ los patrones recientes de las acciones del usuario.
 
 Características:
 - Enums para acciones y resultados del juego
-- Historial de acciones para análisis de patrones
+- Historial de acciones para análisis de patrones estadísticos
 - IA avanzada que detecta la acción más frecuente reciente del usuario
-- Análisis estadístico de movimientos recientes
+- Análisis estadístico de movimientos recientes usando mode()
+- Historial de resultados desde la perspectiva del usuario
 
-Estrategia de IA:
+Estrategia de IA HONESTA y AVANZADA:
+- Analiza SOLO los movimientos previos del usuario (no la acción actual)
 - Detecta los últimos N movimientos del usuario
-- Calcula cuál es la acción más frecuente en esos movimientos
+- Calcula cuál es la acción más frecuente en esos movimientos históricos
 - Elige la acción que vence esa opción más frecuente
+
+NOTA IMPORTANTE: La IA analiza el HISTORIAL de acciones anteriores del usuario.
+Nunca examina la acción actual que el usuario acaba de elegir.
+Eso sería hacer trampa. La IA solo usa información del pasado.
 """
 
 import random
@@ -50,12 +56,17 @@ def evaluar_juego(eleccion_usuario, eleccion_computadora):
     """
     Determina el resultado del juego y muestra el mensaje correspondiente.
     
+    Los resultados se reportan desde la perspectiva del usuario:
+    - Victoria: el usuario ganó
+    - Derrota: el usuario perdió
+    - Empate: fue un empate
+    
     Args:
         eleccion_usuario (AccionJuego): La acción elegida por el usuario
         eleccion_computadora (AccionJuego): La acción elegida por la computadora
         
     Returns:
-        ResultadoJuego: El resultado del juego para el usuario
+        ResultadoJuego: El resultado del juego para el usuario (Victoria/Derrota/Empate)
     """
     
     if eleccion_usuario == eleccion_computadora:
@@ -67,7 +78,7 @@ def evaluar_juego(eleccion_usuario, eleccion_computadora):
         if eleccion_computadora == AccionJuego.Tijeras:
             print("La piedra rompe las tijeras. ¡Ganaste!")
             resultado_juego = ResultadoJuego.Victoria
-        else:
+        else:  # La computadora eligió Papel
             print("El papel envuelve la piedra. ¡Perdiste!")
             resultado_juego = ResultadoJuego.Derrota
 
@@ -76,16 +87,16 @@ def evaluar_juego(eleccion_usuario, eleccion_computadora):
         if eleccion_computadora == AccionJuego.Piedra:
             print("El papel envuelve la piedra. ¡Ganaste!")
             resultado_juego = ResultadoJuego.Victoria
-        else:
+        else:  # La computadora eligió Tijeras
             print("Las tijeras cortan el papel. ¡Perdiste!")
             resultado_juego = ResultadoJuego.Derrota
 
     # Elegiste Tijeras
-    elif eleccion_usuario == AccionJuego.Tijeras:
+    else:  # eleccion_usuario == AccionJuego.Tijeras
         if eleccion_computadora == AccionJuego.Piedra:
             print("La piedra rompe las tijeras. ¡Perdiste!")
             resultado_juego = ResultadoJuego.Derrota
-        else:
+        else:  # La computadora eligió Papel
             print("Las tijeras cortan el papel. ¡Ganaste!")
             resultado_juego = ResultadoJuego.Victoria
 
@@ -94,26 +105,39 @@ def evaluar_juego(eleccion_usuario, eleccion_computadora):
             
 def obtener_accion_computadora(historial_usuario, historial_juego):
     """
-    Obtiene la acción de la computadora basada en análisis de patrones.
+    Obtiene la acción de la computadora basada en análisis de patrones HISTÓRICOS.
     
-    Analiza los últimos NUMERO_ACCIONES_RECIENTES movimientos del usuario
-    para detectar patrones y elige la acción que vence la opción más frecuente.
+    ESTRATEGIA HONESTA: Analiza SOLO los movimientos previos del usuario.
+    La IA NUNCA examina la acción actual que el usuario acaba de elegir.
+    Solo usa información histórica para detectar patrones.
+    
+    IMPORTANTE: El último elemento de historial_usuario es la acción ACTUAL del usuario.
+    Esta función lo EXCLUYE deliberadamente y analiza solo las acciones anteriores.
+    
+    Procedimiento:
+    1. Excluye el último elemento (acción actual) del historial del usuario
+    2. Obtiene los últimos NUMERO_ACCIONES_RECIENTES movimientos PREVIOS
+    3. Calcula la acción más frecuente en esos movimientos históricos
+    4. Elige la acción que vence esa opción más frecuente
     
     Args:
-        historial_usuario (list): Historial de acciones del usuario
+        historial_usuario (list): Historial de acciones del usuario (incluye la actual)
         historial_juego (list): Historial de resultados del juego
         
     Returns:
         AccionJuego: La acción elegida por la computadora
     """
+    # Excluir el último elemento (acción actual) y analizar solo el historial previo
+    historial_previo_usuario = historial_usuario[:-1] if historial_usuario else []
+    
     # No hay acciones previas del usuario => elección aleatoria de la computadora
-    if not historial_usuario or not historial_juego:
+    if not historial_previo_usuario or not historial_juego:
         accion_computadora = obtener_accion_aleatoria_computadora()
-    # IA avanzada: analizar patrones recientes
+    # IA avanzada: analizar patrones en el historial reciente (EXCLUIDA la acción actual)
     else:
-        # Obtener los últimos movimientos del usuario
-        acciones_recientes = historial_usuario[-NUMERO_ACCIONES_RECIENTES:]
-        # Calcular la acción más frecuente en los movimientos recientes
+        # Obtener los últimos NUMERO_ACCIONES_RECIENTES movimientos PREVIOS (sin la actual)
+        acciones_recientes = historial_previo_usuario[-NUMERO_ACCIONES_RECIENTES:]
+        # Calcular la acción más frecuente en esos movimientos históricos
         accion_mas_frecuente_reciente_usuario = AccionJuego(mode(acciones_recientes))
         # Elegir la acción que vence esa opción más frecuente
         accion_computadora = obtener_accion_ganadora(accion_mas_frecuente_reciente_usuario)
