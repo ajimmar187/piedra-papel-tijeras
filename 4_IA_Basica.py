@@ -199,13 +199,11 @@ def main():
     print("=== Bienvenido a Piedra, Papel y Tijeras (v4 - IA Básica) ===\n")
     
     historial_juego = []
-    historial_acciones_usuario = []
     historial_acciones_computadora = []
     
     while True:
         try:
             eleccion_usuario = obtener_accion_usuario()
-            historial_acciones_usuario.append(eleccion_usuario)
         except ValueError:
             rango_str = f"[0, {len(AccionJuego) - 1}]"
             print(f"Selección inválida. ¡Elige una opción dentro del rango {rango_str}!")
